@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OEG | Training Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg:#050A14; --surface:#0B1525; --surface2:#0F1E35;
+  --border:rgba(0,180,255,0.15); --border2:rgba(255,255,255,0.07);
+  --accent:#00C8FF; --accent2:#7B2FFF; --accent3:#00FF9D;
+  --text:#E8F4FF; --text-dim:#7A99BB;
+  --danger:#FF4B6E; --gold:#FFD166;
+  --service:#00C8FF; --cashier:#FFD166; --fnb:#00FF9D;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Be Vietnam Pro',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* BG */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 15% 20%,rgba(0,200,255,.06) 0%,transparent 55%),
+             radial-gradient(ellipse at 85% 80%,rgba(123,47,255,.08) 0%,transparent 55%),
+             radial-gradient(ellipse at 50% 50%,rgba(0,255,157,.03) 0%,transparent 60%);}
+#bg::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(1.5px 1.5px at 8% 12%,rgba(255,255,255,.5) 0%,transparent 100%),
+  radial-gradient(1px 1px at 22% 55%,rgba(255,255,255,.3) 0%,transparent 100%),
+  radial-gradient(2px 2px at 40% 8%,rgba(0,200,255,.7) 0%,transparent 100%),
+  radial-gradient(1px 1px at 60% 70%,rgba(255,255,255,.4) 0%,transparent 100%),
+  radial-gradient(1.5px 1.5px at 75% 25%,rgba(255,255,255,.5) 0%,transparent 100%),
+  radial-gradient(2px 2px at 90% 10%,rgba(123,47,255,.8) 0%,transparent 100%),
+  radial-gradient(1px 1px at 15% 85%,rgba(255,255,255,.3) 0%,transparent 100%),
+  radial-gradient(1px 1px at 85% 60%,rgba(0,255,157,.5) 0%,transparent 100%);}
+
+/* VIEWS */
+.view{display:none;position:relative;z-index:1;min-height:100vh;}
+.view.active{display:flex;flex-direction:column;}
+
+/* ══ REGISTER VIEW ══ */
+#view-register{align-items:center;justify-content:center;padding:40px 20px;}
+.register-wrap{width:100%;max-width:540px;}
+.reg-logo{text-align:center;margin-bottom:40px;}
+.reg-logo-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px;box-shadow:0 0 40px rgba(0,200,255,.3);}
+.reg-logo h1{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;letter-spacing:2px;}
+.reg-logo p{font-size:13px;color:var(--text-dim);letter-spacing:3px;text-transform:uppercase;margin-top:4px;}
+
+.reg-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;}
+.reg-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.reg-sub{font-size:13px;color:var(--text-dim);margin-bottom:32px;line-height:1.6;}
+
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;font-family:'Be Vietnam Pro',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;}
+.field input:focus{border-color:var(--accent);}
+.field input::placeholder{color:rgba(255,255,255,.2);}
+
+.pos-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.pos-card{background:var(--surface2);border:2px solid var(--border2);border-radius:12px;padding:20px 12px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.pos-card:hover{border-color:rgba(255,255,255,.2);}
+.pos-card.selected-service{border-color:var(--service);background:rgba(0,200,255,.08);box-shadow:0 0 20px rgba(0,200,255,.15);}
+.pos-card.selected-cashier{border-color:var(--cashier);background:rgba(255,209,102,.08);box-shadow:0 0 20px rgba(255,209,102,.15);}
+.pos-card.selected-fnb{border-color:var(--fnb);background:rgba(0,255,157,.06);box-shadow:0 0 20px rgba(0,255,157,.12);}
+.pos-icon{font-size:28px;margin-bottom:10px;}
+.pos-name{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;}
+.pos-desc{font-size:11px;color:var(--text-dim);margin-top:4px;line-height:1.4;}
+.pos-check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:10px;}
+.pos-card.selected-service .pos-check{display:flex;background:var(--service);color:var(--bg);}
+.pos-card.selected-cashier .pos-check{display:flex;background:var(--cashier);color:var(--bg);}
+.pos-card.selected-fnb .pos-check{display:flex;background:var(--fnb);color:var(--bg);}
+
+.btn-start{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;font-family:'Be Vietnam Pro',sans-serif;font-size:16px;font-weight:700;color:#fff;cursor:pointer;margin-top:28px;letter-spacing:.5px;transition:all .2s;box-shadow:0 4px 24px rgba(0,200,255,.25);}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,200,255,.35);}
+.btn-start:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+.reg-footer{text-align:center;margin-top:24px;font-size:12px;color:var(--text-dim);}
+
+/* ══ MAIN LEARNING VIEW ══ */
+#view-learn{flex-direction:row;}
+
+/* SIDEBAR */
+#sidebar{width:280px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;transition:transform .3s;}
+.sid-head{padding:20px;border-bottom:1px solid var(--border);}
+.sid-user{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.sid-avatar{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sid-avatar.av-service{background:linear-gradient(135deg,rgba(0,200,255,.3),rgba(0,200,255,.1));}
+.sid-avatar.av-cashier{background:linear-gradient(135deg,rgba(255,209,102,.3),rgba(255,209,102,.1));}
+.sid-avatar.av-fnb{background:linear-gradient(135deg,rgba(0,255,157,.3),rgba(0,255,157,.1));}
+.sid-info{}
+.sid-name{font-weight:700;font-size:14px;}
+.sid-role{font-size:11px;color:var(--text-dim);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+.prog-wrap{margin-top:4px;}
+.prog-label{font-size:11px;color:var(--text-dim);display:flex;justify-content:space-between;margin-bottom:6px;}
+.prog-bar{height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.prog-fill.pf-service{background:linear-gradient(90deg,var(--service),var(--accent2));}
+.prog-fill.pf-cashier{background:linear-gradient(90deg,var(--cashier),#FF9500);}
+.prog-fill.pf-fnb{background:linear-gradient(90deg,var(--fnb),#00BFFF);}
+
+.nav-section-title{font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding:12px 20px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;border-left:2px solid transparent;transition:all .2s;font-size:13px;}
+.nav-item:hover{background:rgba(255,255,255,.03);}
+.nav-item.active{border-left-color:var(--accent);background:rgba(0,200,255,.07);}
+.nav-item.active.c-cashier{border-left-color:var(--cashier);background:rgba(255,209,102,.07);}
+.nav-item.active.c-fnb{border-left-color:var(--fnb);background:rgba(0,255,157,.05);}
+.nav-item.done .nav-dot{background:var(--accent3);}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;transition:background .3s;}
+.nav-item.active .nav-dot{background:var(--accent);box-shadow:0 0 6px var(--accent);}
+.nav-item.active.c-cashier .nav-dot{background:var(--cashier);box-shadow:0 0 6px var(--cashier);}
+.nav-item.active.c-fnb .nav-dot{background:var(--fnb);box-shadow:0 0 6px var(--fnb);}
+.nav-badge{margin-left:auto;font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(123,47,255,.25);color:#B89EFF;flex-shrink:0;}
+
+/* MAIN */
+#main{margin-left:280px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{padding:14px 36px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(5,10,20,.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:13px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;}
+.xp-pill{display:flex;align-items:center;gap:6px;background:rgba(255,209,102,.09);border:1px solid rgba(255,209,102,.2);padding:5px 14px;border-radius:20px;}
+.xp-pill span{font-size:13px;font-weight:700;color:var(--gold);}
+
+#content{padding:36px;flex:1;}
+.slide{display:none;animation:fadeUp .35s ease;}
+.slide.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* SLIDE ELEMENTS */
+.stag{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+.stag.t-service{color:var(--service);background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);}
+.stag.t-cashier{color:var(--cashier);background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.2);}
+.stag.t-fnb{color:var(--fnb);background:rgba(0,255,157,.07);border:1px solid rgba(0,255,157,.2);}
+.stag.t-common{color:var(--text-dim);background:rgba(255,255,255,.05);border:1px solid var(--border2);}
+
+.stitle{font-family:'Rajdhani',sans-serif;font-size:clamp(26px,4vw,42px);font-weight:700;line-height:1.1;background:linear-gradient(135deg,#fff 40%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+.stitle.ct-cashier{background:linear-gradient(135deg,#fff 40%,var(--cashier));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stitle.ct-fnb{background:linear-gradient(135deg,#fff 40%,var(--fnb));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ssub{font-size:15px;color:var(--text-dim);font-weight:300;margin-bottom:28px;}
+
+/* CARDS */
+.cgrid{display:grid;gap:14px;margin-bottom:20px;}
+.g2{grid-template-columns:1fr 1fr;}
+.g3{grid-template-columns:1fr 1fr 1fr;}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr;}
+@media(max-width:800px){.g3,.g4{grid-template-columns:1fr 1fr;}.g2{grid-template-columns:1fr;}}
+@media(max-width:500px){.g3,.g4,.g2{grid-template-columns:1fr;}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;transition:transform .2s,border-color .2s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02),transparent);pointer-events:none;}
+.card:hover{transform:translateY(-2px);border-color:rgba(0,200,255,.3);}
+.card.ac-service{border-color:rgba(0,200,255,.25);background:linear-gradient(135deg,rgba(0,200,255,.07),var(--surface));}
+.card.ac-cashier{border-color:rgba(255,209,102,.25);background:linear-gradient(135deg,rgba(255,209,102,.07),var(--surface));}
+.card.ac-fnb{border-color:rgba(0,255,157,.2);background:linear-gradient(135deg,rgba(0,255,157,.05),var(--surface));}
+.card.ac-red{border-color:rgba(255,75,110,.3);background:rgba(255,75,110,.05);}
+.card.ac-purple{border-color:rgba(123,47,255,.3);background:linear-gradient(135deg,rgba(123,47,255,.07),var(--surface));}
+.cicon{font-size:26px;margin-bottom:10px;}
+.ctitle{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.ctitle.cs{color:var(--service);}
+.ctitle.cc{color:var(--cashier);}
+.ctitle.cf{color:var(--fnb);}
+.ctitle.cp{color:var(--accent2);}
+.ctitle.cr{color:var(--danger);}
+.cbody{font-size:13px;color:var(--text-dim);line-height:1.75;}
+.cbody li{list-style:none;padding-left:14px;position:relative;margin-bottom:3px;}
+.cbody li::before{content:'›';position:absolute;left:0;color:var(--accent);}
+
+/* INFO BOX */
+.ibox{border-radius:0 8px 8px 0;padding:13px 18px;font-size:13px;line-height:1.7;margin:16px 0;border-left-width:3px;border-left-style:solid;}
+.ibox.ib-blue{background:rgba(0,200,255,.06);border-color:rgba(0,200,255,.2);border-left-color:var(--accent);}
+.ibox.ib-yellow{background:rgba(255,209,102,.06);border-color:rgba(255,209,102,.2);border-left-color:var(--gold);}
+.ibox.ib-green{background:rgba(0,255,157,.05);border-color:rgba(0,255,157,.2);border-left-color:var(--accent3);}
+.ibox.ib-red{background:rgba(255,75,110,.06);border-color:rgba(255,75,110,.2);border-left-color:var(--danger);}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.step-row{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;flex-shrink:0;}
+.step-num.sn-c{background:linear-gradient(135deg,var(--cashier),#FF9500);}
+.step-num.sn-f{background:linear-gradient(135deg,var(--fnb),#00BFFF);}
+.step-body{}
+.step-title{font-weight:700;font-size:14px;margin-bottom:4px;}
+.step-desc{font-size:13px;color:var(--text-dim);line-height:1.6;}
+
+/* CHECKLIST */
+.checklist{display:flex;flex-direction:column;gap:8px;}
+.ci{display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;user-select:none;font-size:13px;}
+.ci:hover{border-color:rgba(255,255,255,.15);}
+.ci.checked{border-color:var(--accent3);background:rgba(0,255,157,.04);}
+.cbox{width:20px;height:20px;border:2px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;}
+.ci.checked .cbox{background:var(--accent3);border-color:var(--accent3);color:var(--bg);}
+.ci.checked span{text-decoration:line-through;color:var(--text-dim);}
+
+/* 5C */
+.five-c{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:700px){.five-c{grid-template-columns:repeat(2,1fr);}}
+.cc-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 12px;text-align:center;transition:transform .2s;}
+.cc-card:hover{transform:scale(1.03);}
+.cc-letter{font-family:'Rajdhani',sans-serif;font-size:44px;font-weight:700;line-height:1;margin-bottom:6px;}
+.cc-name{font-size:12px;font-weight:700;margin-bottom:6px;}
+.cc-desc{font-size:11px;color:var(--text-dim);line-height:1.5;}
+
+/* UNIFORM */
+.uni-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+@media(max-width:600px){.uni-grid{grid-template-columns:1fr;}}
+.uni-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;}
+.uni-brand{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;margin-bottom:14px;letter-spacing:2px;}
+.rlist{list-style:none;}
+.rlist li{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;line-height:1.5;}
+.rlist li:last-child{border:none;}
+.no-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(255,75,110,.12);color:var(--danger);border:1px solid rgba(255,75,110,.25);flex-shrink:0;margin-top:2px;}
+
+/* QUIZ */
+.quiz-q{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:600;margin-bottom:20px;line-height:1.4;}
+.quiz-opts{display:flex;flex-direction:column;gap:10px;max-width:640px;}
+.qopt{display:flex;align-items:center;gap:12px;padding:13px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:14px;transition:all .2s;}
+.qopt:hover{border-color:rgba(255,255,255,.2);}
+.qopt.correct{border-color:var(--accent3);background:rgba(0,255,157,.07);}
+.qopt.wrong{border-color:var(--danger);background:rgba(255,75,110,.07);}
+.qbullet{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;}
+.qopt.correct .qbullet{background:var(--accent3);}
+.qopt.wrong .qbullet{background:var(--danger);}
+.qfb{display:none;margin-top:14px;padding:13px 18px;border-radius:10px;font-size:13px;max-width:640px;}
+.qfb.show{display:block;}
+.qfb.fb-ok{background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.25);color:var(--accent3);}
+.qfb.fb-no{background:rgba(255,75,110,.08);border:1px solid rgba(255,75,110,.25);color:var(--danger);}
+.qblock{margin-bottom:30px;padding-bottom:30px;border-bottom:1px solid var(--border);}
+.qblock:last-child{border:none;}
+
+/* ORG */
+.org{display:flex;flex-direction:column;align-items:center;gap:0;max-width:500px;margin:0 auto 24px;}
+.org-box{background:var(--surface2);border:1px solid var(--border);padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;min-width:130px;}
+.org-box.hl{background:linear-gradient(135deg,rgba(0,200,255,.2),rgba(123,47,255,.2));border-color:var(--accent);box-shadow:0 0 16px rgba(0,200,255,.15);}
+.org-box.hl-c{background:linear-gradient(135deg,rgba(255,209,102,.2),rgba(255,149,0,.1));border-color:var(--cashier);}
+.org-box.hl-f{background:linear-gradient(135deg,rgba(0,255,157,.15),rgba(0,191,255,.1));border-color:var(--fnb);}
+.org-line{width:2px;height:20px;background:linear-gradient(var(--border),transparent);margin:0 auto;}
+.org-row{display:flex;gap:16px;}
+
+/* HERO */
+.hero{text-align:center;padding:32px 16px;}
+.hbadge{display:inline-block;font-size:11px;letter-spacing:3px;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:20px;}
+.hbadge.hb-s{color:var(--service);background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);}
+.hbadge.hb-c{color:var(--cashier);background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.2);}
+.hbadge.hb-f{color:var(--fnb);background:rgba(0,255,157,.07);border:1px solid rgba(0,255,157,.2);}
+.htitle{font-family:'Rajdhani',sans-serif;font-size:clamp(28px,5vw,50px);font-weight:700;line-height:1.05;margin-bottom:14px;}
+.hsub{font-size:15px;color:var(--text-dim);max-width:460px;margin:0 auto 28px;line-height:1.6;}
+
+.mod-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:720px;margin:0 auto 28px;text-align:left;}
+@media(max-width:600px){.mod-cards{grid-template-columns:1fr;}}
+.mod-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.mod-n{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:700;color:var(--border2);line-height:1;margin-bottom:6px;}
+.mod-name{font-size:14px;font-weight:600;margin-bottom:3px;}
+.mod-cnt{font-size:12px;color:var(--text-dim);}
+
+/* CONGRATS */
+.star-anim{font-size:48px;animation:rock 2s ease-in-out infinite;}
+@keyframes rock{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.score-box{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:110px;height:110px;border-radius:50%;border:3px solid var(--accent);background:rgba(0,200,255,.07);box-shadow:0 0 32px rgba(0,200,255,.2);margin:0 auto 20px;}
+.score-n{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;color:var(--accent);line-height:1;}
+.score-d{font-size:13px;color:var(--text-dim);}
+.stat-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 24px;text-align:center;min-width:120px;}
+.stat-n{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;}
+.stat-l{font-size:12px;color:var(--text-dim);margin-top:4px;}
+
+/* BOTTOM NAV */
+.bot-nav{padding:20px 36px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(5,10,20,.7);backdrop-filter:blur(12px);position:sticky;bottom:0;z-index:50;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;border-radius:8px;font-family:'Be Vietnam Pro',sans-serif;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 3px 16px rgba(0,200,255,.2);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,200,255,.3);}
+.btn-primary.bc{background:linear-gradient(135deg,var(--cashier),#FF9500);box-shadow:0 3px 16px rgba(255,209,102,.2);}
+.btn-primary.bc:hover{box-shadow:0 6px 24px rgba(255,209,102,.3);}
+.btn-primary.bf{background:linear-gradient(135deg,var(--fnb),#00BFFF);box-shadow:0 3px 16px rgba(0,255,157,.2);}
+.btn-primary.bf:hover{box-shadow:0 6px 24px rgba(0,255,157,.3);}
+.btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:rgba(255,255,255,.2);color:var(--text);}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important;}
+.slide-ctr{font-size:13px;color:var(--text-dim);}
+
+.divider{height:1px;background:var(--border);margin:22px 0;}
+.hl-s{color:var(--service);font-weight:600;}
+.hl-c{color:var(--cashier);font-weight:600;}
+.hl-f{color:var(--fnb);font-weight:600;}
+.hl-r{color:var(--danger);font-weight:600;}
+.hl-g{color:var(--accent3);font-weight:600;}
+
+/* HAMBURGER */
+.hamburger{display:none;position:fixed;top:12px;left:12px;z-index:200;width:40px;height:40px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;align-items:center;justify-content:center;font-size:18px;}
+@media(max-width:860px){.hamburger{display:flex;}#sidebar{transform:translateX(-100%);}#sidebar.open{transform:translateX(0);}#main{margin-left:0!important;}}
+
+/* PAYMENT TABLE */
+.pay-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:600px){.pay-grid{grid-template-columns:1fr;}}
+.pay-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;}
+.pay-icon{font-size:32px;margin-bottom:10px;}
+.pay-name{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;color:var(--cashier);}
+.pay-desc{font-size:12px;color:var(--text-dim);line-height:1.6;}
+
+/* PENALTY */
+.penalty-card{background:rgba(255,75,110,.06);border:1px solid rgba(255,75,110,.3);border-radius:12px;padding:24px;margin-bottom:16px;}
+.penalty-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--danger);margin-bottom:14px;}
+.penalty-row{display:flex;gap:12px;align-items:flex-start;font-size:13px;padding:8px 0;border-bottom:1px solid rgba(255,75,110,.1);}
+.penalty-row:last-child{border:none;}
+.penalty-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);flex-shrink:0;margin-top:4px;}
+
+/* FNB rules */
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+@media(max-width:600px){.rule-grid{grid-template-columns:1fr;}}
+.rule-card{border-radius:12px;padding:20px;}
+.rule-card.no{background:rgba(255,75,110,.06);border:1px solid rgba(255,75,110,.25);}
+.rule-card.yes{background:rgba(0,255,157,.05);border:1px solid rgba(0,255,157,.2);}
+.rule-card-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;margin-bottom:12px;}
+.rule-card.no .rule-card-title{color:var(--danger);}
+.rule-card.yes .rule-card-title{color:var(--fnb);}
+.rule-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;padding:5px 0;color:var(--text-dim);}
+
+/* FIFO */
+.fifo-row{display:flex;align-items:center;gap:0;margin-bottom:20px;}
+.fifo-box{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;font-size:13px;}
+.fifo-arrow{font-size:20px;color:var(--fnb);padding:0 8px;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<button class="hamburger" onclick="toggleSidebar()" id="hbtn">☰</button>
+
+<!-- ══ REGISTER VIEW ══ -->
+<div class="view active" id="view-register">
+<div class="register-wrap">
+  <div class="reg-logo">
+    <div class="reg-logo-icon">🎮</div>
+    <h1>OEG TRAINING</h1>
+    <p>Staff Onboarding Portal</p>
+  </div>
+  <div class="reg-card">
+    <div class="reg-title">Đăng Ký Bắt Đầu Học</div>
+    <div class="reg-sub">Điền thông tin và chọn vị trí để bắt đầu chương trình đào tạo thử việc của bạn.</div>
+
+    <div class="field">
+      <label>Họ và Tên *</label>
+      <input type="text" id="inp-name" placeholder="Nguyễn Văn A" oninput="checkForm()">
+    </div>
+
+    <div class="field">
+      <label>Chọn Vị Trí Đào Tạo *</label>
+      <div class="pos-grid">
+        <div class="pos-card" id="pos-service" onclick="selectPos('service')">
+          <div class="pos-check">✓</div>
+          <div class="pos-icon">🛎️</div>
+          <div class="pos-name" style="color:var(--service)">SERVICE</div>
+          <div class="pos-desc">Phục vụ & chăm sóc khách hàng</div>
+        </div>
+        <div class="pos-card" id="pos-cashier" onclick="selectPos('cashier')">
+          <div class="pos-check">✓</div>
+          <div class="pos-icon">💰</div>
+          <div class="pos-name" style="color:var(--cashier)">THU NGÂN</div>
+          <div class="pos-desc">Giao dịch & kiểm soát tài chính</div>
+        </div>
+        <div class="pos-card" id="pos-fnb" onclick="selectPos('fnb')">
+          <div class="pos-check">✓</div>
+          <div class="pos-icon">🍳</div>
+          <div class="pos-name" style="color:var(--fnb)">F&B</div>
+          <div class="pos-desc">Pha chế & chế biến thực phẩm</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btn-start" onclick="startLearning()" disabled>Bắt Đầu Khóa Học →</button>
+  </div>
+  <div class="reg-footer">OEG Training Portal · Dành riêng cho nhân sự nội bộ</div>
+</div>
+</div>
+
+<!-- ══ LEARN VIEW ══ -->
+<div class="view" id="view-learn">
+
+  <nav id="sidebar">
+    <div class="sid-head">
+      <div class="sid-user">
+        <div class="sid-avatar" id="sid-av"></div>
+        <div class="sid-info">
+          <div class="sid-name" id="sid-name">–</div>
+          <div class="sid-role" id="sid-role">–</div>
+        </div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Tiến độ</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div id="sidebar-nav"></div>
+  </nav>
+
+  <main id="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-lbl">–</div>
+      <div class="xp-pill"><span>⚡</span><span id="xp-num">0 XP</span></div>
+    </div>
+    <div id="content"></div>
+    <div class="bot-nav">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevSlide()" disabled>← Trước</button>
+      <div class="slide-ctr" id="slide-ctr">–</div>
+      <button class="btn btn-primary" id="btn-next" onclick="nextSlide()">Tiếp theo →</button>
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ══ DATA ══ */
+let userName = '', userPos = '', currentSlide = 0, xp = 0;
+let quizAnswered = {}, quizScore = 0, quizBuilt = false;
+
+function selectPos(p){
+  userPos = p;
+  ['service','cashier','fnb'].forEach(k=>{
+    const el = document.getElementById('pos-'+k);
+    el.className='pos-card';
+    if(k===p) el.classList.add('selected-'+k);
+  });
+  checkForm();
+}
+function checkForm(){
+  userName = document.getElementById('inp-name').value.trim();
+  document.getElementById('btn-start').disabled = !(userName && userPos);
+}
+
+/* ══ SLIDES DATA ══ */
+const slides = {
+  service: [
+    {id:'s-welcome', label:'Giới Thiệu', nav:'Giới Thiệu Khóa Học', section:'Bắt Đầu'},
+    {id:'s-model',   label:'Mô hình OEG', nav:'Mô Hình OEG', section:'Module 1 · Tổng Quan'},
+    {id:'s-role',    label:'Vai trò Service', nav:'Vai Trò Service', section:'Module 1 · Tổng Quan'},
+    {id:'s-org',     label:'Sơ đồ tổ chức', nav:'Vị Trí & Phối Hợp', section:'Module 1 · Tổng Quan'},
+    {id:'s-tasks',   label:'Công việc chính', nav:'Công Việc Chính', section:'Module 2 · Công Việc'},
+    {id:'s-start',   label:'Đầu ca', nav:'Đầu Ca Làm Việc', section:'Module 2 · Công Việc'},
+    {id:'s-during',  label:'Trong ca', nav:'Trong Ca Làm Việc', section:'Module 2 · Công Việc'},
+    {id:'s-end',     label:'Cuối ca', nav:'Cuối Ca Làm Việc', section:'Module 2 · Công Việc'},
+    {id:'s-flow',    label:'Quy trình 5 bước', nav:'Quy Trình 5 Bước', section:'Module 2 · Công Việc'},
+    {id:'s-5c',      label:'Quy tắc 5C', nav:'Quy Tắc 5C', section:'Module 3 · Chuẩn Mực'},
+    {id:'s-uniform', label:'Tác phong & Đồng phục', nav:'Tác Phong & Đồng Phục', section:'Module 3 · Chuẩn Mực'},
+    {id:'s-quiz',    label:'Bài Kiểm Tra', nav:'Bài Kiểm Tra', section:'Kiểm Tra', quiz:true},
+    {id:'s-done',    label:'Hoàn Thành', nav:'Hoàn Thành 🎉', section:'Kiểm Tra'},
+  ],
+  cashier: [
+    {id:'c-welcome', label:'Giới Thiệu', nav:'Giới Thiệu Khóa Học', section:'Bắt Đầu'},
+    {id:'c-model',   label:'Mô hình OEG', nav:'Mô Hình OEG', section:'Module 1 · Tổng Quan'},
+    {id:'c-org',     label:'Sơ đồ tổ chức', nav:'Vị Trí & Phối Hợp', section:'Module 1 · Tổng Quan'},
+    {id:'c-role',    label:'Vai trò Thu Ngân', nav:'Vai Trò Thu Ngân', section:'Module 1 · Tổng Quan'},
+    {id:'c-start',   label:'Đầu ca', nav:'Đầu Ca Làm Việc', section:'Module 2 · Vận Hành'},
+    {id:'c-during',  label:'Trong ca', nav:'Trong Ca Làm Việc', section:'Module 2 · Vận Hành'},
+    {id:'c-end',     label:'Cuối ca', nav:'Cuối Ca Làm Việc', section:'Module 2 · Vận Hành'},
+    {id:'c-software',label:'Phần mềm sử dụng', nav:'Phần Mềm & Thanh Toán', section:'Module 2 · Vận Hành'},
+    {id:'c-rules',   label:'Nguyên tắc giao dịch', nav:'Nguyên Tắc Giao Dịch', section:'Module 3 · Quy Tắc'},
+    {id:'c-penalty', label:'Chế tài sai phạm', nav:'Chế Tài Sai Phạm', section:'Module 3 · Quy Tắc'},
+    {id:'c-5c',      label:'Quy tắc 5C', nav:'Quy Tắc 5C', section:'Module 3 · Quy Tắc'},
+    {id:'c-uniform', label:'Tác phong & Đồng phục', nav:'Tác Phong & Đồng Phục', section:'Module 3 · Quy Tắc'},
+    {id:'c-quiz',    label:'Bài Kiểm Tra', nav:'Bài Kiểm Tra', section:'Kiểm Tra', quiz:true},
+    {id:'c-done',    label:'Hoàn Thành', nav:'Hoàn Thành 🎉', section:'Kiểm Tra'},
+  ],
+  fnb: [
+    {id:'f-welcome', label:'Giới Thiệu', nav:'Giới Thiệu Khóa Học', section:'Bắt Đầu'},
+    {id:'f-model',   label:'Mô hình OEG', nav:'Mô Hình OEG', section:'Module 1 · Tổng Quan'},
+    {id:'f-org',     label:'Sơ đồ tổ chức', nav:'Vị Trí & Phối Hợp', section:'Module 1 · Tổng Quan'},
+    {id:'f-role',    label:'Vai trò F&B', nav:'Vai Trò F&B', section:'Module 1 · Tổng Quan'},
+    {id:'f-menu',    label:'Menu sản phẩm', nav:'Menu & Sản Phẩm', section:'Module 2 · Vận Hành'},
+    {id:'f-start',   label:'Đầu ca', nav:'Đầu Ca Làm Việc', section:'Module 2 · Vận Hành'},
+    {id:'f-during',  label:'Trong ca', nav:'Trong Ca Làm Việc', section:'Module 2 · Vận Hành'},
+    {id:'f-end',     label:'Cuối ca', nav:'Cuối Ca Làm Việc', section:'Module 2 · Vận Hành'},
+    {id:'f-rules',   label:'Quy định trong ca', nav:'Quy Định Trong Ca', section:'Module 3 · Chuẩn Mực'},
+    {id:'f-storage', label:'Bảo quản nguyên liệu', nav:'Bảo Quản Nguyên Liệu', section:'Module 3 · Chuẩn Mực'},
+    {id:'f-output',  label:'Quy chuẩn ra đồ', nav:'Quy Chuẩn Ra Đồ', section:'Module 3 · Chuẩn Mực'},
+    {id:'f-uniform', label:'Tác phong & Đồng phục', nav:'Tác Phong & Đồng Phục', section:'Module 3 · Chuẩn Mực'},
+    {id:'f-quiz',    label:'Bài Kiểm Tra', nav:'Bài Kiểm Tra', section:'Kiểm Tra', quiz:true},
+    {id:'f-done',    label:'Hoàn Thành', nav:'Hoàn Thành 🎉', section:'Kiểm Tra'},
+  ]
+};
+
+/* ══ QUIZ DATA ══ */
+const quizData = {
+  service:[
+    {q:'Câu 1: Câu chào chuẩn OEG khi khách vào cửa hàng là gì?',opts:['Xin chào, bạn cần gì?','"Stadium xin chào!" hoặc "Cyber Hub xin chào!"','Vào đi, tự tìm máy nhé','Chờ khách hỏi rồi mới chào'],ans:1,exp:'✅ Câu chào chuẩn phản ánh quy tắc CHÀO trong 5C: "Stadium xin chào!" hoặc "Cyber Hub xin chào!"'},
+    {q:'Câu 2: Service báo cáo trực tiếp lên ai khi có sự cố trong ca?',opts:['Cửa Hàng Trưởng (CHT)','Thu Ngân','Trưởng Ca (TC)','Tự xử lý'],ans:2,exp:'✅ Sự cố trong ca → báo ngay Trưởng Ca (TC). CHT là cấp leo thang khi vấn đề vượt quyền TC.'},
+    {q:'Câu 3: Sau khi khách rời bàn, cần vệ sinh lại trong bao lâu?',opts:['5 phút','15 phút','30 phút','Cuối ca mới dọn'],ans:1,exp:'✅ Bàn ghế và gear cần vệ sinh trong vòng 15 phút sau khi khách rời.'},
+    {q:'Câu 4: Quy tắc 5C gồm những giá trị nào?',opts:['Cười, Chào, Cảm ơn, Chủ động, Chuyên nghiệp','Cười, Chào, Cẩn thận, Chu đáo, Chuyên nghiệp','Chào, Cúi đầu, Cảm ơn, Chủ động, Chuẩn mực','Cười, Chào, Cẩn thận, Chủ động, Chuyên nghiệp'],ans:0,exp:'✅ 5C là: Cười – Chào – Cảm ơn – Chủ động – Chuyên nghiệp.'},
+    {q:'Câu 5: Ai điều phối công việc của Service trong ca làm việc?',opts:['Cửa Hàng Trưởng','Trưởng Ca','Thu Ngân','F&B'],ans:1,exp:'✅ Nhân viên Service nghe sự chỉ đạo trực tiếp từ Trưởng Ca trong ca.'},
+  ],
+  cashier:[
+    {q:'Câu 1: Thu ngân được phép thực hiện bao nhiêu hình thức thanh toán cho một đơn?',opts:['Tùy khách yêu cầu','Tối đa 2 hình thức','Chỉ 1 hình thức duy nhất','Cả 3 hình thức cùng lúc'],ans:2,exp:'✅ Nguyên tắc: Chỉ được thực hiện MỘT HÌNH THỨC THANH TOÁN với một đơn thanh toán.'},
+    {q:'Câu 2: Khi nhận bill chuyển khoản từ khách, thu ngân cần làm gì?',opts:['Nhận bill là xử lý ngay','Xác nhận bill + nghe chuông báo nhận tiền','Chỉ cần xem số tiền khớp','Hỏi lại Trưởng Ca'],ans:1,exp:'✅ Giao dịch chuyển khoản: xác nhận bill khách đưa VÀ chuông báo nhận tiền – thiếu một trong hai chưa được xử lý.'},
+    {q:'Câu 3: Đơn nào BẮT BUỘC phải có ghi chú theo quy định?',opts:['Đơn thanh toán thông thường','Đơn trả tiền mặt','100% đơn giảm giá','Đơn thanh toán qua Momo'],ans:2,exp:'✅ 100% đơn giảm giá cần có ghi chú. Đây là quy định bắt buộc để kiểm soát tài chính.'},
+    {q:'Câu 4: Phần mềm nào dùng để xử lý giao dịch NET (nạp tiền, tạo tài khoản)?',opts:['FFOOD','FNET','Cả hai đều được','Google Sheets'],ans:1,exp:'✅ FNET = tất cả tác vụ giao dịch NET. FFOOD = đồ ăn, minimart, combo net.'},
+    {q:'Câu 5: Thu ngân chịu trách nhiệm như thế nào với chênh lệch doanh thu?',opts:['Báo cáo lên quản lý là xong','Chia trách nhiệm với Trưởng Ca','Hoàn toàn chịu trách nhiệm và bồi hoàn','Không cần lo vì hệ thống tự đối soát'],ans:2,exp:'✅ Thu ngân HOÀN TOÀN chịu trách nhiệm với chênh lệch doanh thu trong ca mình làm.'},
+  ],
+  fnb:[
+    {q:'Câu 1: Nguyên tắc FIFO trong bảo quản nguyên liệu có nghĩa là gì?',opts:['Nhập sau dùng trước','First In First Out – Nhập trước dùng trước','Để theo thứ tự ngày sản xuất không cần ưu tiên','Không cần theo thứ tự nếu còn hạn'],ans:1,exp:'✅ FIFO = First In First Out. Nguyên liệu nhập trước phải được sử dụng trước để tránh lãng phí và hết hạn.'},
+    {q:'Câu 2: F&B có được phép để người ngoài vào quầy không?',opts:['Được nếu có sự đồng ý của Trưởng Ca','Được nếu là nhân viên OEG','KHÔNG được phép tuyệt đối','Chỉ được ở khu Stadium'],ans:2,exp:'✅ 3 KHÔNG: KHÔNG để người ngoài phận sự vào quầy. Đặc biệt nghiêm cấm trong khối cyber game.'},
+    {q:'Câu 3: F&B BẮT BUỘC làm gì trước khi ra đồ cho khách?',opts:['Kiểm tra số lượng đơn','Test vị thành phẩm trước khi ra đồ','Chụp ảnh sản phẩm','Hỏi ý kiến Trưởng Ca'],ans:1,exp:'✅ 3 BẮT BUỘC: BẮT BUỘC test vị thành phẩm trước khi ra đồ để đảm bảo chất lượng.'},
+    {q:'Câu 4: Quy chuẩn ra đồ của F&B gồm mấy quy tắc chính?',opts:['2 quy tắc','3 quy tắc','4 quy tắc','5 quy tắc'],ans:2,exp:'✅ 4 quy tắc ra đồ: Đúng thời gian – Đúng công thức – Đúng tiêu chuẩn hình ảnh – Kiểm tra chất lượng trước khi phục vụ.'},
+    {q:'Câu 5: Đồng phục F&B bắt buộc có những gì?',opts:['Áo đồng phục và giày','Áo đồng phục, quần dài, tạp dề dài và găng tay','Bất kỳ đồ tối màu nào cũng được','Áo đồng phục và tạp dề ngắn'],ans:1,exp:'✅ Trang phục F&B: Quần dài + áo đồng phục + tạp dề dài + găng tay – đảm bảo an toàn vệ sinh thực phẩm.'},
+  ]
+};
+
+/* ══ SLIDE HTML ══ */
+function getSlideHTML(id){
+  const pos = userPos;
+  const color = pos==='service'?'service':pos==='cashier'?'cashier':'fnb';
+  const tcolor = pos==='service'?'s':pos==='cashier'?'c':'f';
+  const snum = pos==='service'?'sn-s':pos==='cashier'?'sn-c':'sn-f';
+  const btnCls = pos==='cashier'?'bc':pos==='fnb'?'bf':'';
+  const acCls = `ac-${color}`;
+
+  // ── WELCOME ──
+  if(id.endsWith('-welcome')){
+    const modules = pos==='service'
+      ? [['01','Tổng Quan OEG','3 bài · Mô hình, vai trò, sơ đồ tổ chức'],['02','Công Việc Hàng Ngày','5 bài · Đầu ca → Trong ca → Cuối ca'],['03','Chuẩn Mực Thương Hiệu','2 bài · 5C, đồng phục, tác phong']]
+      : pos==='cashier'
+      ? [['01','Tổng Quan OEG','3 bài · Mô hình, vai trò, sơ đồ tổ chức'],['02','Vận Hành Thu Ngân','4 bài · Ca làm việc, phần mềm, thanh toán'],['03','Quy Tắc & Tài Chính','4 bài · Giao dịch, chế tài, 5C, đồng phục']]
+      : [['01','Tổng Quan OEG','3 bài · Mô hình, vai trò, sơ đồ tổ chức'],['02','Vận Hành F&B','4 bài · Menu, đầu ca, trong ca, cuối ca'],['03','Chuẩn Mực F&B','4 bài · Quy định, bảo quản, ra đồ, đồng phục']];
+    const icon = pos==='service'?'🛎️':pos==='cashier'?'💰':'🍳';
+    const posLabel = pos==='service'?'Service':pos==='cashier'?'Thu Ngân':'F&B';
+    return `<div class="hero">
+      <div class="hbadge hb-${tcolor}">${icon} OEG Training · ${posLabel}</div>
+      <div class="htitle">Chào Mừng,<br>${userName}!</div>
+      <div class="hsub">Bạn đang bắt đầu chương trình đào tạo thử việc vị trí <strong>${posLabel}</strong>. Hoàn thành 3 module và bài kiểm tra để nhận chứng nhận.</div>
+      <div class="mod-cards">
+        ${modules.map(m=>`<div class="mod-card"><div class="mod-n">${m[0]}</div><div class="mod-name">${m[1]}</div><div class="mod-cnt">${m[2]}</div></div>`).join('')}
+      </div>
+      <div class="ibox ib-green" style="max-width:480px;margin:0 auto;">💡 Click vào menu bên trái để xem bất kỳ bài nào. Quiz ở cuối để xác nhận kiến thức của bạn.</div>
+    </div>`;
+  }
+
+  // ── MODEL ──
+  if(id.endsWith('-model')) return `
+    <div class="stag t-${color}">📍 Module 1 · Bài 1</div>
+    <div class="stitle ct-${tcolor}">Mô Hình OEG</div>
+    <div class="ssub">Hai thương hiệu – hai mô hình vận hành khác nhau</div>
+    <div class="cgrid g2">
+      <div class="card ac-service"><div class="cicon">🏟️</div><div class="ctitle cs">OEG Stadium</div><div class="cbody"><ul><li>Cơ sở đầu tiên và duy nhất</li><li>Phòng máy + tổ chức sự kiện gaming</li><li>Khu FPS Zone, MOBA Zone, VIP Zone, Premium Zone</li></ul></div></div>
+      <div class="card ac-purple"><div class="cicon">🎮</div><div class="ctitle cp">OEG CyberHub</div><div class="cbody"><ul><li>Nhiều cơ sở, đang mở rộng</li><li>Mini Mart tầng 1 + Net các tầng trên</li><li>Mô hình tích hợp bán lẻ & gaming</li></ul></div></div>
+    </div>
+    <div class="ibox ib-blue">🎯 <strong>Cần biết:</strong> Tùy bạn làm tại Stadium hay CyberHub, layout và khu vực phụ trách sẽ khác nhau. Hãy nắm sơ đồ tầng/khu của cơ sở mình ngay từ ngày đầu.</div>`;
+
+  // ── ORG (Service) ──
+  if(id==='s-org') return `
+    <div class="stag t-service">📍 Module 1 · Bài 3</div>
+    <div class="stitle">Vị Trí & Luồng Phối Hợp</div>
+    <div class="ssub">Bạn báo cáo cho ai và phối hợp với ai?</div>
+    <div class="org">
+      <div class="org-row"><div class="org-box" style="color:var(--gold)">🏢 Ban Quản Lý</div></div>
+      <div class="org-line"></div>
+      <div class="org-row"><div class="org-box">👔 Cửa Hàng Trưởng</div></div>
+      <div class="org-line"></div>
+      <div class="org-row"><div class="org-box">🎯 Trưởng Ca</div></div>
+      <div class="org-line"></div>
+      <div class="org-row">
+        <div class="org-box hl">🟦 SERVICE</div>
+        <div class="org-box">💰 Thu Ngân</div>
+        <div class="org-box">🍳 Bar + Bếp</div>
+      </div>
+    </div>
+    <div class="cgrid g2">
+      <div class="card"><div class="cicon">📣</div><div class="ctitle cs">Tuyến Báo Cáo</div><div class="cbody"><ul><li>Service làm việc dưới sự chỉ đạo của TC/CHT</li><li>Sự cố trong ca → báo ngay Trưởng Ca</li><li>Vấn đề lớn hơn → leo thang lên CHT</li></ul></div></div>
+      <div class="card"><div class="cicon">🔗</div><div class="ctitle cs">Phối Hợp Ngang</div><div class="cbody"><ul><li>Luôn hỗ trợ phối hợp với Thu Ngân</li><li>Luôn hỗ trợ phối hợp với Bar + Bếp</li><li>Ca làm việc là team – không làm độc lập</li></ul></div></div>
+    </div>
+    <div class="ibox ib-blue">💡 <strong>Nguyên tắc vàng:</strong> Khi không chắc nên làm gì → <span class="hl-s">hỏi Trưởng Ca ngay</span>, đừng tự xử lý một mình với tình huống phức tạp.</div>`;
+
+  // ── ORG (Cashier) ──
+  if(id==='c-org') return `
+    <div class="stag t-cashier">📍 Module 1 · Bài 2</div>
+    <div class="stitle ct-c">Vị Trí & Luồng Phối Hợp</div>
+    <div class="ssub">Cơ cấu tổ chức và quan hệ phối hợp trong ca</div>
+    <div class="org">
+      <div class="org-row"><div class="org-box" style="color:var(--gold)">🏢 Ban Quản Lý</div></div>
+      <div class="org-line"></div>
+      <div class="org-row"><div class="org-box">👔 Cửa Hàng Trưởng</div></div>
+      <div class="org-line"></div>
+      <div class="org-row"><div class="org-box">🎯 Trưởng Ca</div></div>
+      <div class="org-line"></div>
+      <div class="org-row">
+        <div class="org-box hl-c">💰 THU NGÂN</div>
+        <div class="org-box">🛎️ Service</div>
+        <div class="org-box">🍳 Bar + Bếp</div>
+      </div>
+    </div>
+    <div class="ibox ib-yellow">⚡ Nhân viên nghe sự chỉ đạo của CHT/TC. Giữa các vị trí <strong>luôn luôn phải có sự hỗ trợ, phối hợp và kết nối với nhau.</strong></div>`;
+
+  // ── ORG (F&B) ──
+  if(id==='f-org') return `
+    <div class="stag t-fnb">📍 Module 1 · Bài 2</div>
+    <div class="stitle ct-f">Vị Trí & Luồng Phối Hợp</div>
+    <div class="ssub">Cơ cấu tổ chức và quan hệ phối hợp trong ca</div>
+    <div class="org">
+      <div class="org-row"><div class="org-box" style="color:var(--gold)">🏢 Ban Quản Lý</div></div>
+      <div class="org-line"></div>
+      <div class="org-row"><div class="org-box">👔 Cửa Hàng Trưởng</div></div>
+      <div class="org-line"></div>
+      <div class="org-row"><div class="org-box">🎯 Trưởng Ca</div></div>
+      <div class="org-line"></div>
+      <div class="org-row">
+        <div class="org-box hl-f">🍳 NHÂN VIÊN F&B</div>
+        <div class="org-box">💰 Thu Ngân</div>
+        <div class="org-box">🛎️ Service</div>
+      </div>
+    </div>
+    <div class="ibox ib-green">⚡ Nhân viên nghe sự điều phối của CHT và TC. Giữa các vị trí <strong>luôn phải có sự hỗ trợ, phối hợp và kết nối với nhau.</strong></div>`;
+
+  // ── SERVICE ROLE ──
+  if(id==='s-role') return `
+    <div class="stag t-service">📍 Module 1 · Bài 2</div>
+    <div class="stitle">Vai Trò Của Service</div>
+    <div class="ssub">Cầu nối không thể thiếu giữa OEG và khách hàng</div>
+    <div class="cgrid g3">
+      <div class="card ac-service"><div class="cicon">🛎️</div><div class="ctitle cs">Phục Vụ KH</div><div class="cbody"><ul><li>Nhận order từ khách hàng</li><li>Thu tiền khách hàng</li><li>Tư vấn sản phẩm, dịch vụ</li></ul></div></div>
+      <div class="card ac-purple"><div class="cicon">⭐</div><div class="ctitle cp">Chăm Sóc KH</div><div class="cbody"><ul><li>Xử lý các đơn hàng</li><li>Cung cấp thông tin</li><li>Giải đáp thắc mắc</li><li>Khắc phục sự cố phát sinh</li></ul></div></div>
+      <div class="card ac-fnb"><div class="cicon">🤝</div><div class="ctitle cf">Kết Nối KH</div><div class="cbody"><ul><li>Trực tiếp phục vụ & kết nối với KH</li><li>Quảng bá hình ảnh, văn hóa 5C</li><li>Tiếp nhận vấn đề báo cáo TC & CHT</li></ul></div></div>
+    </div>
+    <div class="ibox ib-yellow">🔑 Service là <span class="hl-s">cầu nối không thể thiếu</span> giữa các bộ phận trong ca. Khách hàng đánh giá OEG trực tiếp qua trải nghiệm dịch vụ của bạn.</div>
+    <div class="divider"></div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;color:var(--service);">✅ Self-Check: Bạn đã hiểu vai trò chưa?</div>
+    <div class="checklist">
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Tôi hiểu Service cần nhận order, thu tiền và tư vấn khách hàng</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Tôi hiểu khi có sự cố, tôi cần báo cáo lên TC/CHT</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Tôi hiểu Service là bộ mặt thương hiệu OEG với khách hàng</span></div>
+    </div>`;
+
+  // ── CASHIER ROLE ──
+  if(id==='c-role') return `
+    <div class="stag t-cashier">📍 Module 1 · Bài 3</div>
+    <div class="stitle ct-c">Vai Trò Của Thu Ngân</div>
+    <div class="ssub">Cầu nối giữa khách hàng và OEG – đảm bảo tài chính chính xác</div>
+    <div class="cgrid g2">
+      <div class="card ac-cashier"><div class="cicon">💬</div><div class="ctitle cc">Giao Tiếp Với KH</div><div class="cbody"><ul><li>Tiếp nhận các yêu cầu của khách</li><li>Xử lý các khiếu nại</li><li>Hỗ trợ vấn đề, thắc mắc</li><li>Tư vấn dịch vụ cho khách</li></ul></div></div>
+      <div class="card ac-service"><div class="cicon">💳</div><div class="ctitle cs">Cung Cấp Dịch Vụ</div><div class="cbody"><ul><li>Lập tài khoản, nạp tiền, bán combo</li><li>Bán hàng siêu thị (minimart)</li><li>Xử lý tất cả giao dịch thanh toán</li></ul></div></div>
+      <div class="card ac-fnb"><div class="cicon">🧹</div><div class="ctitle cf">Vệ Sinh Khu Vực</div><div class="cbody"><ul><li>Dọn dẹp khu vực quầy thu ngân</li><li>Đảm bảo ấn phẩm đặt đúng nơi quy định</li></ul></div></div>
+      <div class="card ac-purple"><div class="cicon">📊</div><div class="ctitle cp">Kiểm Soát Tài Chính</div><div class="cbody"><ul><li>Đảm bảo doanh thu trên hệ thống so với thực tế</li><li>Điền báo cáo Daily report</li><li>Báo cáo trên nhóm công việc</li></ul></div></div>
+    </div>
+    <div class="ibox ib-yellow">⚡ Thu ngân là <span class="hl-c">cầu nối giữa khách hàng và OEG</span>, đảm bảo dịch vụ hiệu quả và <strong>kiểm soát chính xác các hoạt động tài chính</strong>.</div>`;
+
+  // ── FNB ROLE ──
+  if(id==='f-role') return `
+    <div class="stag t-fnb">📍 Module 1 · Bài 3</div>
+    <div class="stitle ct-f">Vai Trò Nhân Viên F&B</div>
+    <div class="ssub">Đảm bảo chất lượng đồ ăn & đồ uống cho toàn bộ cửa hàng</div>
+    <div class="cgrid g2">
+      <div class="card ac-fnb"><div class="cicon">🥘</div><div class="ctitle cf">Bảo Quản & Sơ Chế</div><div class="cbody"><ul><li>Bảo quản nguyên liệu đúng tiêu chuẩn</li><li>Sơ chế nguyên liệu chuẩn bị cho ca</li><li>Đảm bảo VSATTP trong toàn bộ quy trình</li></ul></div></div>
+      <div class="card ac-service"><div class="cicon">🍹</div><div class="ctitle cs">Chế Biến</div><div class="cbody"><ul><li>Pha chế / chế biến đúng công thức và định lượng</li><li>Test vị thành phẩm trước khi ra đồ</li><li>Đảm bảo tiêu chuẩn hình ảnh ra đồ</li></ul></div></div>
+      <div class="card ac-cashier"><div class="cicon">🧽</div><div class="ctitle cc">Vệ Sinh & Báo Cáo</div><div class="cbody"><ul><li>Giữ sạch khu vực làm việc liên tục trong ca</li><li>Dọn rửa dụng cụ, thiết bị cuối ca</li><li>Báo cáo và bàn giao ca theo đúng quy trình</li></ul></div></div>
+      <div class="card ac-purple"><div class="cicon">📦</div><div class="ctitle cp">Quản Lý Nguyên Liệu</div><div class="cbody"><ul><li>Theo dõi tồn nguyên liệu, báo order khi sắp hết</li><li>Fill nguyên liệu thường xuyên</li><li>Không lưu tồn đồ quá date</li></ul></div></div>
+    </div>`;
+
+  // ── FNB MENU ──
+  if(id==='f-menu') return `
+    <div class="stag t-fnb">📍 Module 2 · Bài 1</div>
+    <div class="stitle ct-f">Menu & Sản Phẩm</div>
+    <div class="ssub">Các danh mục sản phẩm F&B hiện đang kinh doanh tại OEG</div>
+    <div class="cgrid g2">
+      <div class="card ac-fnb"><div class="cicon">🍔</div><div class="ctitle cf">Menu Food</div><div class="cbody"><ul><li>Các món ăn theo menu cửa hàng</li><li>Combo net + food</li><li>Đồ ăn từ minimart (CyberHub)</li><li>Phải chế biến đúng công thức & định lượng chuẩn</li></ul></div></div>
+      <div class="card ac-service"><div class="cicon">🧋</div><div class="ctitle cs">Menu Drink</div><div class="cbody"><ul><li>Đồ uống pha chế theo menu</li><li>Áp dụng đúng định lượng và tiêu chuẩn pha chế</li><li>Test vị trước khi phục vụ</li><li>Đảm bảo hình ảnh ra đồ đúng chuẩn</li></ul></div></div>
+    </div>
+    <div class="ibox ib-green">📋 <strong>Lưu ý:</strong> Bạn cần thuộc menu và hiểu được thành phần từng món để có thể tư vấn, phối hợp với bộ phận Service khi khách hỏi. Menu chi tiết sẽ được đào tạo trực tiếp tại cơ sở.</div>`;
+
+  // ── SERVICE START SHIFT ──
+  if(id==='s-start') return `
+    <div class="stag t-service">📍 Module 2 · Bài 2</div>
+    <div class="stitle">Đầu Ca Làm Việc</div>
+    <div class="ssub">4 bước bắt buộc trước khi bắt đầu phục vụ</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nhận bàn giao từ Service ca trước</div><div class="step-desc">Nắm tình hình ca trước, ghi nhớ các vấn đề tồn đọng và công việc được bàn giao</div></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-body"><div class="step-title">Kiểm tra khu vực phụ trách</div><div class="step-desc">Vệ sinh, thiết bị, máy móc – đảm bảo mọi thứ hoạt động bình thường trước khi tiếp nhận khách</div></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-body"><div class="step-title">Ghi nhớ các vấn đề phát sinh từ ca trước</div><div class="step-desc">Máy hỏng, sự cố tồn đọng, lưu ý đặc biệt từ ca trước cần theo dõi tiếp</div></div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-body"><div class="step-title">Kiểm tra đủ dụng cụ vệ sinh</div><div class="step-desc">Khăn, cồn vệ sinh, cọ bàn phím – chuẩn bị sẵn trước khi ca bắt đầu</div></div></div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;margin-bottom:12px;color:var(--service);">✅ Checklist Đầu Ca – Tick khi hoàn thành</div>
+    <div class="checklist">
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã bàn giao với service ca trước, nắm rõ tình hình</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã kiểm tra vệ sinh toàn bộ khu vực phụ trách</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã kiểm tra thiết bị, máy móc hoạt động tốt</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã chuẩn bị đủ: khăn, cồn vệ sinh, cọ bàn phím</span></div>
+    </div>`;
+
+  // ── CASHIER START ──
+  if(id==='c-start') return `
+    <div class="stag t-cashier">📍 Module 2 · Bài 1</div>
+    <div class="stitle ct-c">Đầu Ca Làm Việc</div>
+    <div class="ssub">Kiểm tra đầy đủ trước khi nhận ca</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num sn-c">1</div><div class="step-body"><div class="step-title">Nhận bàn giao từ thu ngân ca trước</div><div class="step-desc">Kiểm tra két tiền, tình trạng các giao dịch tồn đọng, sự cố chưa xử lý</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">2</div><div class="step-body"><div class="step-title">Kiểm tra khu vực quầy thu ngân</div><div class="step-desc">Vệ sinh quầy, các ấn phẩm đặt đúng nơi quy định, thiết bị hoạt động bình thường</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">3</div><div class="step-body"><div class="step-title">Kiểm tra phần mềm FNET & FFOOD</div><div class="step-desc">Đăng nhập, xác nhận hệ thống hoạt động, kiểm tra các đơn pending từ ca trước</div></div></div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;margin-bottom:12px;color:var(--cashier);">✅ Checklist Đầu Ca Thu Ngân</div>
+    <div class="checklist">
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã kiểm tra và xác nhận két tiền với ca trước</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã vệ sinh quầy, sắp xếp ấn phẩm đúng nơi quy định</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã đăng nhập FNET và FFOOD, xác nhận hoạt động bình thường</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã ghi nhớ sự cố/đơn tồn đọng từ ca trước</span></div>
+    </div>`;
+
+  // ── FNB START ──
+  if(id==='f-start') return `
+    <div class="stag t-fnb">📍 Module 2 · Bài 2</div>
+    <div class="stitle ct-f">Đầu Ca Làm Việc</div>
+    <div class="ssub">Kiểm tra khu vực, nguyên liệu và tài sản từ ca trước</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num sn-f">1</div><div class="step-body"><div class="step-title">Kiểm tra khu vực làm việc</div><div class="step-desc">Vệ sinh khu vực bar/bếp, thiết bị, dụng cụ từ ca trước</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">2</div><div class="step-body"><div class="step-title">Kiểm tra tồn nguyên liệu theo checklist</div><div class="step-desc">Xác nhận với ca trước số lượng nguyên liệu hiện có, ghi nhận vào hệ thống</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">3</div><div class="step-body"><div class="step-title">Nhận bàn giao ca</div><div class="step-desc">Nếu không có vấn đề → ký nhận bàn giao. Nếu có vấn đề → báo ngay Trưởng Ca trước khi nhận</div></div></div>
+    </div>
+    <div class="checklist" style="margin-top:20px;">
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã kiểm tra vệ sinh toàn bộ khu vực bar/bếp</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã kiểm tra tồn nguyên liệu và xác nhận với ca trước</span></div>
+      <div class="ci" onclick="toggleCI(this)"><div class="cbox">✓</div><span>Đã nhận bàn giao ca và ghi nhận vấn đề (nếu có)</span></div>
+    </div>`;
+
+  // ── SERVICE DURING ──
+  if(id==='s-during') return `
+    <div class="stag t-service">📍 Module 2 · Bài 3</div>
+    <div class="stitle">Trong Ca Làm Việc</div>
+    <div class="ssub">3 nguyên tắc vận hành liên tục trong ca</div>
+    <div class="cgrid g3">
+      <div class="card ac-service"><div class="cicon">🎯</div><div class="ctitle cs">Tập Trung Làm Việc</div><div class="cbody"><ul><li>Xử lý chính xác, tránh sai sót nhầm lẫn</li><li>Không bỏ sót order hoặc yêu cầu khách</li><li>Ưu tiên xử lý đúng hơn xử lý nhanh</li></ul></div></div>
+      <div class="card ac-purple"><div class="cicon">🙋</div><div class="ctitle cp">Hướng Dẫn & Hỗ Trợ</div><div class="cbody"><ul><li>Hướng dẫn khách đăng nhập, tạo tài khoản</li><li>Tư vấn gói giờ, combo phù hợp</li><li>Hỗ trợ khi khách gặp sự cố thiết bị</li></ul></div></div>
+      <div class="card ac-fnb"><div class="cicon">🤝</div><div class="ctitle cf">Phối Hợp Trong Ca</div><div class="cbody"><ul><li>Báo ngay Trưởng Ca khi có sự cố</li><li>Phối hợp với Thu Ngân và Bar+Bếp</li><li>Hỗ trợ nhau khi một khu vực quá tải</li></ul></div></div>
+    </div>
+    <div class="ibox ib-yellow">⚠️ Nếu khách phàn nàn hoặc vấn đề vượt quá quyền hạn → <span class="hl-s">báo ngay Trưởng Ca</span>, không tự ý xử lý hoặc tranh luận với khách.</div>`;
+
+  // ── CASHIER DURING ──
+  if(id==='c-during') return `
+    <div class="stag t-cashier">📍 Module 2 · Bài 2</div>
+    <div class="stitle ct-c">Trong Ca Làm Việc</div>
+    <div class="ssub">Vận hành quầy thu ngân chính xác và hiệu quả</div>
+    <div class="cgrid g3">
+      <div class="card ac-cashier"><div class="cicon">💳</div><div class="ctitle cc">Xử Lý Giao Dịch</div><div class="cbody"><ul><li>Nhận tiền mặt / chuyển khoản / Momo</li><li>Xác nhận kỹ trước khi thực hiện giao dịch</li><li>Chỉ 1 hình thức thanh toán / đơn</li></ul></div></div>
+      <div class="card ac-service"><div class="cicon">🖥️</div><div class="ctitle cs">Vận Hành Phần Mềm</div><div class="cbody"><ul><li>FNET: tạo tài khoản, nạp tiền, check máy</li><li>FFOOD: đơn order, minimart, combo net</li><li>Theo dõi đơn treo – không bấm hoàn thành</li></ul></div></div>
+      <div class="card ac-fnb"><div class="cicon">📋</div><div class="ctitle cf">Kiểm Soát Đơn Hàng</div><div class="cbody"><ul><li>Check, push, nhắc nhở tránh miss/trễ đơn</li><li>Phối hợp với Service và Bar+Bếp</li><li>Ghi chú đầy đủ với đơn giảm giá/hoàn</li></ul></div></div>
+    </div>
+    <div class="ibox ib-yellow">🔑 100% đơn nhận được tiền mới xử lý – <span class="hl-c">không có ngoại lệ</span>. Mọi chênh lệch tài chính do thu ngân hoàn toàn chịu trách nhiệm.</div>`;
+
+  // ── FNB DURING ──
+  if(id==='f-during') return `
+    <div class="stag t-fnb">📍 Module 2 · Bài 3</div>
+    <div class="stitle ct-f">Trong Ca Làm Việc</div>
+    <div class="ssub">Vận hành bếp/bar chuẩn xác và an toàn</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num sn-f">1</div><div class="step-body"><div class="step-title">Nhận order và chế biến đúng chuẩn</div><div class="step-desc">Nhận order từ hệ thống hoặc CSKH. Pha chế/chế biến đúng công thức – định lượng – tiêu chuẩn đã được đào tạo.</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">2</div><div class="step-body"><div class="step-title">Giữ sạch khu vực làm việc</div><div class="step-desc">Dọn dẹp quầy liên tục trong ca. Đảm bảo khu vực làm việc khô ráo và sạch sẽ mọi lúc.</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">3</div><div class="step-body"><div class="step-title">Theo dõi tồn nguyên liệu</div><div class="step-desc">Báo order ngay khi nguyên liệu sắp hết. Fill nguyên liệu thường xuyên, tránh hết đồ giữa ca.</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">4</div><div class="step-body"><div class="step-title">Phối hợp khi đông khách</div><div class="step-desc">Phối hợp với các bộ phận khác khi đông khách hoặc có sự cố. Báo ngay Trưởng Ca khi không xử lý kịp.</div></div></div>
+    </div>`;
+
+  // ── SERVICE END ──
+  if(id==='s-end') return `
+    <div class="stag t-service">📍 Module 2 · Bài 4</div>
+    <div class="stitle">Cuối Ca Làm Việc</div>
+    <div class="ssub">3 việc bắt buộc trước khi rời ca</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-body"><div class="step-title">Vệ sinh khu vực phụ trách</div><div class="step-desc">Lau dọn bàn ghế, gear – sắp xếp đúng vị trí. Đảm bảo sạch sẽ, gọn gàng trước khi bàn giao</div></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-body"><div class="step-title">Báo cáo ca lên nhóm công việc</div><div class="step-desc">Nêu rõ khu vực phụ trách, tình trạng ca, các sự cố bất thường (nếu có) – báo đầy đủ và chính xác</div></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-body"><div class="step-title">Bàn giao cho Service ca sau</div><div class="step-desc">Truyền đạt đầy đủ tình hình, vấn đề tồn đọng cho ca tiếp theo theo checklist bàn giao</div></div></div>
+    </div>
+    <div class="ibox ib-green">✅ <span class="hl-g">Mục tiêu:</span> Ca sau nhận bàn giao với khu vực sạch sẽ, đủ thông tin để làm việc ngay mà không cần hỏi lại.</div>`;
+
+  // ── CASHIER END ──
+  if(id==='c-end') return `
+    <div class="stag t-cashier">📍 Module 2 · Bài 3</div>
+    <div class="stitle ct-c">Cuối Ca Làm Việc</div>
+    <div class="ssub">Đối soát tài chính và bàn giao ca đúng quy trình</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num sn-c">1</div><div class="step-body"><div class="step-title">Đối soát doanh thu</div><div class="step-desc">Đảm bảo doanh thu trên hệ thống khớp với thực tế. Mọi chênh lệch phải được báo cáo và giải thích rõ ràng.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">2</div><div class="step-body"><div class="step-title">Điền Daily Report</div><div class="step-desc">Điền báo cáo đầy đủ, chính xác lên Daily Report và báo cáo trên nhóm công việc.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">3</div><div class="step-body"><div class="step-title">Vệ sinh quầy & bàn giao ca</div><div class="step-desc">Dọn dẹp sạch sẽ khu vực quầy. Bàn giao két tiền và tình trạng ca cho thu ngân ca sau.</div></div></div>
+    </div>
+    <div class="ibox ib-red">🔴 <span class="hl-r">Lưu ý tài chính:</span> Thu ngân hoàn toàn chịu trách nhiệm với mọi chênh lệch doanh thu trong ca. Không có ngoại lệ.</div>`;
+
+  // ── FNB END ──
+  if(id==='f-end') return `
+    <div class="stag t-fnb">📍 Module 2 · Bài 4</div>
+    <div class="stitle ct-f">Cuối Ca Làm Việc</div>
+    <div class="ssub">Dọn dẹp, kiểm tra nguyên liệu và bàn giao đúng quy trình</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num sn-f">1</div><div class="step-body"><div class="step-title">Kiểm tra tồn nguyên liệu</div><div class="step-desc">Ghi nhận tồn nguyên liệu vào sổ hoặc hệ thống. Order đồ nếu cần thiết cho ca sau.</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">2</div><div class="step-body"><div class="step-title">Dọn rửa & vệ sinh toàn bộ</div><div class="step-desc">Vệ sinh toàn bộ khu vực làm việc, dụng cụ và thiết bị. Đảm bảo đúng tiêu chuẩn VSATTP.</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">3</div><div class="step-body"><div class="step-title">Sơ chế nguyên liệu cho ca sau</div><div class="step-desc">Kiểm tra nguyên liệu và sơ chế những gì cần chuẩn bị sẵn cho ca tiếp theo.</div></div></div>
+      <div class="step-row"><div class="step-num sn-f">4</div><div class="step-body"><div class="step-title">Báo cáo & bàn giao ca</div><div class="step-desc">Báo cáo tình trạng ca, tồn nguyên liệu và bàn giao cho F&B ca sau theo đúng quy trình.</div></div></div>
+    </div>`;
+
+  // ── SERVICE FLOW ──
+  if(id==='s-flow') return `
+    <div class="stag t-service">📍 Module 2 · Bài 5</div>
+    <div class="stitle">Quy Trình 5 Bước Phục Vụ</div>
+    <div class="ssub">Lộ trình trải nghiệm khách hàng – Service đảm bảo từng bước</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-body"><div class="step-title">Nhận Bàn Giao Ca Trước</div><div class="step-desc">Kiểm tra vệ sinh, CCDC, thiết bị theo checklist bàn giao. Bao quát khu vực phân công, lưu ý công việc được bàn giao.</div></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-body"><div class="step-title">Tiếp Đón & Hỗ Trợ Khách Hàng</div><div class="step-desc">Chào khách: <span class="hl-s">"Stadium xin chào!" / "Cyber Hub xin chào!"</span> — Hỏi: "Anh/Chị cần hỗ trợ gì không ạ?" — Hướng dẫn đăng nhập, order, sử dụng thiết bị.</div></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-body"><div class="step-title">Thu Tiền & Phục Vụ</div><div class="step-desc">Hỗ trợ khách order, thu tiền, kiểm soát đơn hàng – check, push, nhắc Thu Ngân và FnB tránh miss/trễ đơn. Phục vụ đồ đến bàn, kiểm tra chất lượng và bill trước khi giao.</div></div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-body"><div class="step-title">Dọn Dẹp & Vệ Sinh</div><div class="step-desc">Thu dọn ly, cốc, bát đĩa khi khách dùng xong. Lau dọn, vệ sinh, sắp xếp bàn ghế và gear trong vòng <span class="hl-s">15 phút</span> sau khi khách rời.</div></div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-body"><div class="step-title">Báo Cáo Ca & Bàn Giao</div><div class="step-desc">Dọn dẹp khu vực theo checklist. Bàn giao cho ca sau và báo cáo lên nhóm công việc.</div></div></div>
+    </div>`;
+
+  // ── CASHIER SOFTWARE ──
+  if(id==='c-software') return `
+    <div class="stag t-cashier">📍 Module 2 · Bài 4</div>
+    <div class="stitle ct-c">Phần Mềm & Hình Thức Thanh Toán</div>
+    <div class="ssub">Hai phần mềm chính và ba hình thức thanh toán</div>
+    <div class="cgrid g2" style="margin-bottom:24px;">
+      <div class="card ac-cashier"><div class="cicon">🖥️</div><div class="ctitle cc">FNET</div><div class="cbody"><ul><li>Tất cả giao dịch NET: tạo tài khoản, nạp/trừ tiền, check số máy</li><li>Giao dịch Momo qua FNET sẽ tự động cộng tiền</li></ul></div></div>
+      <div class="card ac-service"><div class="cicon">🍔</div><div class="ctitle cs">FFOOD</div><div class="cbody"><ul><li>Giao dịch FOOD: đồ minimart, đơn order trên máy, bán combo net</li><li>Giao dịch Momo qua FFOOD sẽ tự động ra bill</li></ul></div></div>
+    </div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;color:var(--cashier);">Hình Thức Thanh Toán</div>
+    <div class="pay-grid">
+      <div class="pay-card"><div class="pay-icon">💵</div><div class="pay-name">Tiền Mặt</div><div class="pay-desc">Nhận trực tiếp, bảo quản trong két có khóa tại quầy thu ngân. Xác nhận kỹ mệnh giá tiền khách đưa.</div></div>
+      <div class="pay-card"><div class="pay-icon">📱</div><div class="pay-name">Chuyển Khoản</div><div class="pay-desc">Tài khoản công ty có mã QR đặt trước quầy. Xác nhận bill + nghe chuông báo nhận tiền mới xử lý.</div></div>
+      <div class="pay-card"><div class="pay-icon">🟣</div><div class="pay-name">Momo</div><div class="pay-desc">Ví trung gian, mã QR Momo hiển thị trên máy thu ngân. Chỉ xử lý trên máy FFOOD tại quầy.</div></div>
+    </div>
+    <div class="ibox ib-yellow">⚠️ Chỉ thực hiện <strong>MỘT HÌNH THỨC THANH TOÁN</strong> với một đơn. Không kết hợp nhiều hình thức trong cùng một giao dịch.</div>`;
+
+  // ── CASHIER RULES ──
+  if(id==='c-rules') return `
+    <div class="stag t-cashier">📍 Module 3 · Bài 1</div>
+    <div class="stitle ct-c">Nguyên Tắc Xử Lý Giao Dịch</div>
+    <div class="ssub">Các quy định bắt buộc không có ngoại lệ</div>
+    <div class="steps">
+      <div class="step-row"><div class="step-num sn-c">✓</div><div class="step-body"><div class="step-title">100% đơn nhận được tiền mới xử lý</div><div class="step-desc">Tiền mặt: xác nhận kỹ mệnh giá. Chuyển khoản: xác nhận bill + chuông báo. Momo: xác nhận hệ thống đã nhận tiền.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">✓</div><div class="step-body"><div class="step-title">Chỉ 1 hình thức thanh toán / đơn</div><div class="step-desc">Không kết hợp tiền mặt + chuyển khoản hoặc bất kỳ hình thức nào trong cùng một đơn.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">✓</div><div class="step-body"><div class="step-title">Đơn treo: chỉ tạo đơn, không hoàn thành</div><div class="step-desc">Đơn sự kiện, đơn nội bộ OEG: tạo đơn → báo bar/bếp. KHÔNG bấm hoàn thành đơn.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">✓</div><div class="step-body"><div class="step-title">100% đơn giảm giá có ghi chú</div><div class="step-desc">Bắt buộc ghi chú lý do giảm giá. Không có ghi chú = vi phạm quy định tài chính.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">✓</div><div class="step-body"><div class="step-title">100% đơn hoàn → hoàn bằng tiền mặt</div><div class="step-desc">Không hoàn qua chuyển khoản hay Momo. Tất cả đơn hoàn phải thực hiện bằng tiền mặt.</div></div></div>
+      <div class="step-row"><div class="step-num sn-c">✓</div><div class="step-body"><div class="step-title">Chụp ảnh bill CK + Momo</div><div class="step-desc">100% bill giao dịch chuyển khoản và Momo cần chụp ảnh lưu lại giao dịch của khách.</div></div></div>
+    </div>`;
+
+  // ── CASHIER PENALTY ──
+  if(id==='c-penalty') return `
+    <div class="stag t-cashier">📍 Module 3 · Bài 2</div>
+    <div class="stitle ct-c">Chế Tài Xử Lý Sai Phạm</div>
+    <div class="ssub">Trách nhiệm tài chính và mức xử lý khi có sai phạm</div>
+    <div class="penalty-card">
+      <div class="penalty-title">🔴 Trách Nhiệm Tài Chính</div>
+      <div class="penalty-row"><div class="penalty-dot"></div><span>Thu ngân <span class="hl-r">hoàn toàn chịu trách nhiệm</span> với các chênh lệch doanh thu trong ca làm việc của mình</span></div>
+      <div class="penalty-row"><div class="penalty-dot"></div><span>Chênh lệch tiền mặt → bù tiền mặt tại quầy</span></div>
+      <div class="penalty-row"><div class="penalty-dot"></div><span>Chênh lệch chuyển khoản → chuyển khoản thẳng vào tài khoản công ty</span></div>
+    </div>
+    <div class="cgrid g3">
+      <div class="card" style="border-color:rgba(0,200,255,.25);text-align:center;"><div style="font-size:28px;margin-bottom:8px;">📝</div><div class="ctitle cs">Mức Nhắc Nhở</div><div class="cbody" style="text-align:left;">Sai phạm nhỏ lần đầu, chưa gây thiệt hại nghiêm trọng</div></div>
+      <div class="card" style="border-color:rgba(255,209,102,.25);text-align:center;"><div style="font-size:28px;margin-bottom:8px;">⚠️</div><div class="ctitle cc">Mức Cảnh Cáo</div><div class="cbody" style="text-align:left;">Sai phạm tái diễn hoặc gây thiệt hại ở mức độ trung bình</div></div>
+      <div class="card ac-red" style="text-align:center;"><div style="font-size:28px;margin-bottom:8px;">🚫</div><div class="ctitle cr">Mức Kỷ Luật</div><div class="cbody" style="text-align:left;">Sai phạm nghiêm trọng → <span class="hl-r">đình chỉ hoặc buộc thôi việc</span></div></div>
+    </div>
+    <div class="ibox ib-red">⚡ Mức kỷ luật là cao nhất. Hãy thực hiện đúng nguyên tắc giao dịch để tránh rủi ro tài chính cho bản thân.</div>`;
+
+  // ── FNB RULES ──
+  if(id==='f-rules') return `
+    <div class="stag t-fnb">📍 Module 3 · Bài 1</div>
+    <div class="stitle ct-f">Quy Định Trong Ca Làm Việc</div>
+    <div class="ssub">3 KHÔNG và 3 BẮT BUỘC cần ghi nhớ</div>
+    <div class="rule-grid">
+      <div class="rule-card no">
+        <div class="rule-card-title">🚫 3 KHÔNG</div>
+        <div class="rule-item"><span style="color:var(--danger)">✗</span><span>KHÔNG để người ngoài phận sự vào quầy – đặc biệt trong khối cyber game</span></div>
+        <div class="rule-item"><span style="color:var(--danger)">✗</span><span>KHÔNG để người ngoài chức vụ bar/bếp sử dụng tài sản của bar/bếp</span></div>
+        <div class="rule-item"><span style="color:var(--danger)">✗</span><span>KHÔNG lưu tồn đồ quá date</span></div>
+      </div>
+      <div class="rule-card yes">
+        <div class="rule-card-title">✅ 3 BẮT BUỘC</div>
+        <div class="rule-item"><span style="color:var(--fnb)">✓</span><span>BẮT BUỘC test vị thành phẩm trước khi ra đồ</span></div>
+        <div class="rule-item"><span style="color:var(--fnb)">✓</span><span>BẮT BUỘC fill nguyên liệu thường xuyên – tránh hết đồ</span></div>
+        <div class="rule-item"><span style="color:var(--fnb)">✓</span><span>BẮT BUỘC dọn dẹp quầy liên tục, đảm bảo khô ráo và sạch sẽ</span></div>
+      </div>
+    </div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;color:var(--fnb);">Quy Định Tác Phong Nhân Viên F&B</div>
+    <div class="cgrid g2">
+      <div class="card ac-fnb"><div class="ctitle cf">Trang Phục</div><div class="cbody"><ul><li>Quần dài, áo đồng phục</li><li>Tạp dề dài và găng tay đảm bảo VSATTP</li></ul></div></div>
+      <div class="card ac-fnb"><div class="ctitle cf">Diện Mạo</div><div class="cbody"><ul><li>Tóc gọn, mặt sạch, không trang điểm đậm</li><li>Móng tay ngắn, không sơn móng, không gắn charm</li><li>Không đeo nhẫn, vòng tay, dây chuyền</li></ul></div></div>
+    </div>`;
+
+  // ── FNB STORAGE ──
+  if(id==='f-storage') return `
+    <div class="stag t-fnb">📍 Module 3 · Bài 2</div>
+    <div class="stitle ct-f">Bảo Quản Nguyên Liệu</div>
+    <div class="ssub">Đảm bảo vệ sinh an toàn thực phẩm (VSATTP)</div>
+    <div class="cgrid g2" style="margin-bottom:20px;">
+      <div class="card ac-fnb"><div class="cicon">🗂️</div><div class="ctitle cf">Phân Khu Rõ Ràng</div><div class="cbody"><ul><li>Tránh lây nhiễm chéo giữa các loại nguyên liệu</li><li>Nguyên liệu sống và chín phải để riêng</li><li>Khu vực bảo quản sạch sẽ, khô thoáng</li></ul></div></div>
+      <div class="card ac-fnb"><div class="cicon">🌡️</div><div class="ctitle cf">Tiêu Chuẩn Nhiệt Độ</div><div class="cbody"><ul><li>Đảm bảo nhiệt độ bảo quản đúng từng loại NVL</li><li>Kiểm tra tủ lạnh/tủ đông thường xuyên</li><li>Báo ngay khi thiết bị không đạt chuẩn nhiệt độ</li></ul></div></div>
+    </div>
+    <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:14px;color:var(--fnb);">Nguyên Tắc FIFO</div>
+    <div class="fifo-row">
+      <div class="fifo-box">📦 Nhập trước<br><small style="color:var(--text-dim)">First In</small></div>
+      <div class="fifo-arrow">→</div>
+      <div class="fifo-box">🔢 Tem mã, STT, HSD</div>
+      <div class="fifo-arrow">→</div>
+      <div class="fifo-box">🍽️ Dùng trước<br><small style="color:var(--text-dim)">First Out</small></div>
+    </div>
+    <div class="ibox ib-red">🚫 <span class="hl-r">KHÔNG</span> lưu tồn đồ quá date. Kiểm tra hạn sử dụng hàng ngày và loại bỏ ngay nguyên liệu hết hạn.</div>`;
+
+  // ── FNB OUTPUT ──
+  if(id==='f-output') return `
+    <div class="stag t-fnb">📍 Module 3 · Bài 3</div>
+    <div class="stitle ct-f">Quy Chuẩn Ra Đồ</div>
+    <div class="ssub">4 quy tắc đảm bảo chất lượng sản phẩm đến tay khách</div>
+    <div class="cgrid g2" style="margin-bottom:20px;">
+      <div class="card ac-fnb"><div class="cicon">⏱️</div><div class="ctitle cf">Đúng Thời Gian</div><div class="cbody">Đảm bảo thời gian ra đồ theo tiêu chuẩn. Không để khách chờ quá lâu – phối hợp với Service báo trước khi có delay.</div></div>
+      <div class="card ac-fnb"><div class="cicon">📋</div><div class="ctitle cf">Đúng Công Thức</div><div class="cbody">Chế biến đúng định lượng và công thức đã được đào tạo. Không tự ý thay đổi thành phần hoặc tỉ lệ.</div></div>
+      <div class="card ac-fnb"><div class="cicon">📸</div><div class="ctitle cf">Đúng Tiêu Chuẩn Hình Ảnh</div><div class="cbody">Đảm bảo hình ảnh ra đồ đúng tiêu chuẩn thương hiệu. Trình bày đẹp, đồng nhất với mọi đơn hàng.</div></div>
+      <div class="card ac-fnb"><div class="cicon">✅</div><div class="ctitle cf">Kiểm Tra Trước Khi Ra</div><div class="cbody"><span class="hl-f">BẮT BUỘC</span> test vị thành phẩm trước khi phục vụ. Không ra đồ khi chưa đạt chuẩn chất lượng.</div></div>
+    </div>
+    <div class="ibox ib-green">🎯 Mục tiêu: <span class="hl-g">100% sản phẩm ra đến tay khách</span> đều đạt chuẩn về thời gian, công thức, hình ảnh và chất lượng.</div>`;
+
+  // ── FNB UNIFORM ──
+  if(id==='f-uniform') return `
+    <div class="stag t-fnb">📍 Module 3 · Bài 4</div>
+    <div class="stitle ct-f">Tác Phong & Đồng Phục F&B</div>
+    <div class="ssub">Chuẩn mực diện mạo đảm bảo vệ sinh an toàn thực phẩm</div>
+    <div class="cgrid g2" style="margin-bottom:20px;">
+      <div class="card ac-fnb">
+        <div class="ctitle cf">Trang Phục Bắt Buộc</div>
+        <ul class="rlist">
+          <li><span>👕</span><span>Áo đồng phục cơ sở mình làm</span></li>
+          <li><span>👖</span><span>Quần dài (không mặc quần short)</span></li>
+          <li><span>👔</span><span>Tạp dề dài – bắt buộc khi làm việc</span></li>
+          <li><span>🧤</span><span>Găng tay – đảm bảo VSATTP</span></li>
+          <li><span>👟</span><span>Giày (không đi dép)</span></li>
+        </ul>
+      </div>
+      <div class="card ac-red">
+        <div class="ctitle cr">Quy Định Vệ Sinh Cá Nhân</div>
+        <ul class="rlist">
+          <li><span>💅</span><span>Móng tay ngắn, không sơn, không gắn charm</span></li>
+          <li><span>💍</span><span>Không đeo nhẫn, vòng tay, dây chuyền khi chế biến</span></li>
+          <li><span>💄</span><span>Không trang điểm đậm</span></li>
+          <li><span>🚿</span><span>Rửa tay thường xuyên, thay đồng phục sạch</span></li>
+          <li><span>🌸</span><span>Không dùng nước hoa mùi mạnh</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ibox ib-green">🧼 <strong>VSATTP:</strong> Các quy định về trang phục và vệ sinh cá nhân không chỉ là nội quy mà còn là <span class="hl-f">yêu cầu pháp lý</span> về an toàn thực phẩm.</div>`;
+
+  // ── 5C (shared) ──
+  if(id.endsWith('-5c')) return `
+    <div class="stag t-${color}">📍 Module 3 · Quy Tắc Chung</div>
+    <div class="stitle ct-${tcolor}">Quy Tắc 5C</div>
+    <div class="ssub">Giá trị cốt lõi và lời khẳng định thương hiệu OEG</div>
+    <div class="five-c">
+      <div class="cc-card" style="border-color:rgba(0,200,255,.3);"><div class="cc-letter" style="color:var(--service);">C</div><div class="cc-name" style="color:var(--service);">CƯỜI</div><div class="cc-desc">Luôn giữ thái độ vui vẻ, thân thiện và nụ cười khi làm việc</div></div>
+      <div class="cc-card" style="border-color:rgba(123,47,255,.3);"><div class="cc-letter" style="color:var(--accent2);">C</div><div class="cc-name" style="color:var(--accent2);">CHÀO</div><div class="cc-desc">Chủ động chào hỏi khách hàng khi ra vào cửa hàng</div></div>
+      <div class="cc-card" style="border-color:rgba(0,255,157,.3);"><div class="cc-letter" style="color:var(--fnb);">C</div><div class="cc-name" style="color:var(--fnb);">CẢM ƠN</div><div class="cc-desc">Luôn nói lời cảm ơn với thái độ trân trọng trong mọi tình huống</div></div>
+      <div class="cc-card" style="border-color:rgba(255,209,102,.3);"><div class="cc-letter" style="color:var(--cashier);">C</div><div class="cc-name" style="color:var(--cashier);">CHỦ ĐỘNG</div><div class="cc-desc">Tự giác hỗ trợ khách và đồng nghiệp, không chờ nhắc nhở</div></div>
+      <div class="cc-card" style="border-color:rgba(255,75,110,.3);"><div class="cc-letter" style="color:var(--danger);">C</div><div class="cc-name" style="color:var(--danger);">CHUYÊN NGHIỆP</div><div class="cc-desc">Duy trì tác phong chuẩn mực, lịch sự và đúng quy trình</div></div>
+    </div>
+    <div class="ibox ib-red">🔴 <span class="hl-r">100% nhân sự</span> trong hệ thống thực hiện 5C – đây là <strong>giá trị cốt lõi</strong> của OEG với khách hàng. Không có ngoại lệ.</div>`;
+
+  // ── UNIFORM (Service & Cashier) ──
+  if(id==='s-uniform'||id==='c-uniform') return `
+    <div class="stag t-${color}">📍 Module 3 · Quy Tắc Chung</div>
+    <div class="stitle ct-${tcolor}">Tác Phong & Đồng Phục</div>
+    <div class="ssub">Chuẩn mực diện mạo khi làm việc tại OEG</div>
+    <div class="uni-grid">
+      <div class="uni-card"><div class="uni-brand" style="color:var(--service);">🟦 OEG CYBERHUB</div>
+        <ul class="rlist">
+          <li><span>👕</span><span>Áo đồng phục CyberHub của cơ sở mình làm</span></li>
+          <li><span>👖</span><span>Nam: Quần tối màu, đi giày</span></li>
+          <li><span>👗</span><span>Nữ: Chân váy trên đầu gối hoặc quần tối màu, đi giày</span></li>
+          <li><span>💄</span><span>Trang điểm nhẹ nhàng, tự nhiên</span></li>
+          <li><span>🏷️</span><span>Bắt buộc đeo bảng tên của chính mình</span></li>
+        </ul>
+      </div>
+      <div class="uni-card"><div class="uni-brand" style="color:var(--text-dim);">⬛ OEG STADIUM</div>
+        <ul class="rlist">
+          <li><span>👕</span><span>Áo đồng phục Stadium của cơ sở mình làm</span></li>
+          <li><span>👖</span><span>Nam: Quần tối màu, đi giày</span></li>
+          <li><span>👗</span><span>Nữ: Chân váy trên đầu gối hoặc quần tối màu, đi giày</span></li>
+          <li><span>💄</span><span>Trang điểm nhẹ nhàng, tự nhiên</span></li>
+          <li><span>🏷️</span><span>Bắt buộc đeo bảng tên của chính mình</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card ac-red">
+      <div class="ctitle cr" style="margin-bottom:14px;">🚫 Quy Tắc 4 KHÔNG</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="no-tag">KHÔNG</span><span>Đi dép lê, dép quai hậu</span></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="no-tag">KHÔNG</span><span>Trang điểm quá đậm</span></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="no-tag">KHÔNG</span><span>Quần áo nhăn, rách hoặc sai mẫu</span></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="no-tag">KHÔNG</span><span>Đeo bảng tên của nhân viên khác</span></div>
+      </div>
+    </div>`;
+
+  // ── SERVICE TASKS ──
+  if(id==='s-tasks') return `
+    <div class="stag t-service">📍 Module 2 · Bài 1</div>
+    <div class="stitle">Công Việc Chính</div>
+    <div class="ssub">5 nhóm nhiệm vụ cốt lõi của vị trí Service mỗi ca</div>
+    <div class="cgrid" style="grid-template-columns:repeat(5,1fr);gap:10px;">
+      ${[['💬','Giao tiếp','Chào đón và giao tiếp trực tiếp với khách hàng'],['🙋','Hỗ trợ','Hỗ trợ khách, giải đáp thắc mắc về dịch vụ'],['💳','Thu tiền','Thu tiền & phục vụ đồ ăn, đồ uống cho khách'],['🧹','Dọn dẹp','Dọn dẹp và setup máy tại khu vực phụ trách'],['📋','Báo cáo','Báo cáo ca & bàn giao công việc cho ca sau']].map(([ico,name,desc])=>`<div class="card" style="text-align:center;"><div style="font-size:28px;margin-bottom:8px;">${ico}</div><div class="ctitle cs" style="font-size:13px;">${name}</div><div class="cbody" style="font-size:11px;">${desc}</div></div>`).join('')}
+    </div>`;
+
+  // ── QUIZ ──
+  if(id.endsWith('-quiz')){
+    const qs = quizData[pos];
+    return `<div class="stitle ct-${tcolor}">Bài Kiểm Tra</div>
+    <div class="ssub">5 câu hỏi – trả lời để nhận XP và hoàn thành khóa học</div>
+    <div id="quiz-inner">
+      ${qs.map((q,qi)=>`
+      <div class="qblock" id="qb-${qi}">
+        <div class="quiz-q">${q.q}</div>
+        <div class="quiz-opts" id="qo-${qi}">
+          ${q.opts.map((o,oi)=>`<div class="qopt" id="qopt-${qi}-${oi}" onclick="answerQ(${qi},${oi})"><div class="qbullet"></div><span>${o}</span></div>`).join('')}
+        </div>
+        <div class="qfb" id="qfb-${qi}"></div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  // ── DONE ──
+  if(id.endsWith('-done')){
+    const posLabel=pos==='service'?'Service':pos==='cashier'?'Thu Ngân':'F&B';
+    return `<div class="hero">
+      <div class="star-anim">🌟</div>
+      <div class="hbadge hb-${tcolor}">Hoàn Thành Khóa Học</div>
+      <div class="htitle" style="margin-top:16px;">Chúc Mừng,<br>${userName}!</div>
+      <div class="hsub">Bạn đã hoàn thành chương trình đào tạo thử việc vị trí <strong>${posLabel}</strong> tại OEG. Hẹn gặp bạn tại cơ sở!</div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-n" id="fn-score" style="color:var(--accent3)">–</div><div class="stat-l">Điểm Quiz</div></div>
+        <div class="stat-box"><div class="stat-n" id="fn-xp" style="color:var(--gold)">–</div><div class="stat-l">XP Nhận Được</div></div>
+        <div class="stat-box"><div class="stat-n" style="color:var(--accent)">3</div><div class="stat-l">Module Hoàn Thành</div></div>
+      </div>
+      <div class="ibox ib-green" style="max-width:500px;margin:0 auto 20px;text-align:left;">
+        <strong>🎯 Bước tiếp theo:</strong>
+        <ul style="margin-top:8px;padding-left:16px;font-size:13px;line-height:2;">
+          <li>Đọc lại checklist đầu ca trước buổi làm đầu tiên</li>
+          <li>Thực hành 5C mỗi ngày – đặc biệt CHÀO và CƯỜI</li>
+          <li>Hỏi Trưởng Ca khi chưa rõ bất kỳ quy trình nào</li>
+        </ul>
+      </div>
+      <button class="btn btn-ghost" onclick="goHome()">🏠 Chọn Lại Vị Trí</button>
+    </div>`;
+  }
+  return `<div class="stitle">Nội dung đang cập nhật...</div>`;
+}
+
+/* ══ QUIZ LOGIC ══ */
+function answerQ(qi,chosen){
+  const q=quizData[userPos][qi];
+  if(document.getElementById(`qopt-${qi}-${chosen}`).classList.contains('correct')||document.getElementById(`qopt-${qi}-${chosen}`).classList.contains('wrong'))return;
+  document.querySelectorAll(`#qo-${qi} .qopt`).forEach((el,i)=>{
+    el.style.pointerEvents='none';
+    if(i===q.ans)el.classList.add('correct');
+    else if(i===chosen&&chosen!==q.ans)el.classList.add('wrong');
+  });
+  const fb=document.getElementById(`qfb-${qi}`);
+  fb.classList.add('show');
+  if(chosen===q.ans){fb.classList.add('fb-ok');fb.textContent=q.exp;quizScore++;xp+=80;}
+  else{fb.classList.add('fb-no');fb.textContent='❌ Chưa đúng. '+q.exp;}
+  quizAnswered[qi]=chosen;
+  document.getElementById('xp-num').textContent=xp+' XP';
+  if(Object.keys(quizAnswered).length===5){
+    setTimeout(()=>{document.getElementById('btn-next').disabled=false;},500);
+  }
+}
+
+/* ══ NAVIGATION ══ */
+let slideList=[];
+
+function goSlide(n){
+  if(n<0||n>=slideList.length)return;
+  currentSlide=n;
+  const sl=slideList[n];
+  document.getElementById('content').innerHTML=getSlideHTML(sl.id);
+  if(sl.id.endsWith('-done')){
+    setTimeout(()=>{
+      const fs=document.getElementById('fn-score');
+      const fx=document.getElementById('fn-xp');
+      if(fs)fs.textContent=quizScore+'/5';
+      if(fx)fx.textContent=xp+' XP';
+    },100);
+  }
+  // nav update
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.remove('active');
+    const c=el.dataset.color;
+    el.classList.remove('c-cashier','c-fnb');
+  });
+  const navEl=document.querySelector(`[data-slide="${n}"]`);
+  if(navEl){
+    const c=navEl.dataset.color;
+    navEl.classList.add('active');
+    if(c==='cashier')navEl.classList.add('c-cashier');
+    else if(c==='fnb')navEl.classList.add('c-fnb');
+  }
+  // mark done
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    if(parseInt(el.dataset.slide)<n)el.querySelector('.nav-dot').style.background='var(--accent3)';
+  });
+  // progress
+  const pct=Math.round(n/(slideList.length-1)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  // topbar
+  document.getElementById('topbar-lbl').textContent=sl.label;
+  // buttons
+  document.getElementById('btn-prev').disabled=n===0;
+  const isQuiz=sl.id.endsWith('-quiz');
+  const quizDone=Object.keys(quizAnswered).length===5;
+  document.getElementById('btn-next').disabled=(n===slideList.length-1)||(isQuiz&&!quizDone);
+  document.getElementById('slide-ctr').textContent=(n+1)+' / '+slideList.length;
+  // xp
+  if(n>0&&!sl.id.endsWith('-quiz')&&!sl.id.endsWith('-done')){xp=Math.max(xp,n*15);document.getElementById('xp-num').textContent=xp+' XP';}
+  // scroll
+  document.getElementById('content').scrollIntoView({behavior:'smooth',block:'start'});
+  if(window.innerWidth<=860)document.getElementById('sidebar').classList.remove('open');
+}
+
+function nextSlide(){if(currentSlide<slideList.length-1)goSlide(currentSlide+1);}
+function prevSlide(){if(currentSlide>0)goSlide(currentSlide-1);}
+function toggleCI(el){el.classList.toggle('checked');xp+=el.classList.contains('checked')?10:-10;xp=Math.max(0,xp);document.getElementById('xp-num').textContent=xp+' XP';}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+function goHome(){
+  userPos='';userName='';currentSlide=0;xp=0;quizAnswered={};quizScore=0;
+  document.getElementById('inp-name').value='';
+  ['service','cashier','fnb'].forEach(k=>document.getElementById('pos-'+k).className='pos-card');
+  document.getElementById('btn-start').disabled=true;
+  document.getElementById('view-learn').classList.remove('active');
+  document.getElementById('view-register').classList.add('active');
+}
+
+/* ══ START ══ */
+function startLearning(){
+  slideList=slides[userPos];
+  quizAnswered={};quizScore=0;xp=0;currentSlide=0;
+  // sidebar avatar
+  const icons={service:'🛎️',cashier:'💰',fnb:'🍳'};
+  const labels={service:'Service',cashier:'Thu Ngân',fnb:'F&B'};
+  const av=document.getElementById('sid-av');
+  av.className='sid-avatar av-'+userPos;
+  av.textContent=icons[userPos];
+  document.getElementById('sid-name').textContent=userName;
+  document.getElementById('sid-role').textContent=labels[userPos];
+  // progress bar class
+  const pf=document.getElementById('prog-fill');
+  pf.className='prog-fill pf-'+userPos;
+  // btn color
+  const btn=document.getElementById('btn-next');
+  btn.className='btn btn-primary'+(userPos==='cashier'?' bc':userPos==='fnb'?' bf':'');
+  // build sidebar nav
+  let navHTML='';
+  let lastSection='';
+  slideList.forEach((sl,i)=>{
+    if(sl.section!==lastSection){navHTML+=`<div class="nav-section-title">${sl.section}</div>`;lastSection=sl.section;}
+    const badge=sl.quiz?'<div class="nav-badge">5 câu</div>':'';
+    navHTML+=`<div class="nav-item" data-slide="${i}" data-color="${userPos}" onclick="goSlide(${i})"><div class="nav-dot"></div><div style="flex:1">${sl.nav}</div>${badge}</div>`;
+  });
+  document.getElementById('sidebar-nav').innerHTML=navHTML;
+  // switch views
+  document.getElementById('view-register').classList.remove('active');
+  document.getElementById('view-learn').classList.add('active');
+  goSlide(0);
+}
+</script>
+</body>
+</html>
